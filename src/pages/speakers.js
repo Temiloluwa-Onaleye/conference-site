@@ -23,6 +23,19 @@ const speakers = ({}) => {
     };
   }, []);
 
+  const heartFavoriteHandler = (e, favoriteValue) => {
+    e.preventDefault();
+    const sessionId = parseInt(e.target.attributes["data-sessionid"].value);
+    setSpeakerList(
+      speakerList.map((item) => {
+        if (item.id === sessionId) {
+          return { ...item, favorite: favoriteValue };
+        }
+        return item;
+      })
+    );
+  };
+
   isLoading ? <div>Loading...</div> : "";
 
   return (
@@ -41,6 +54,7 @@ const speakers = ({}) => {
                   firstName={firstName}
                   lastName={lastName}
                   favorite={favorite}
+                  onHeartFavoriteHandler={onHeartFavoriteHandler}
                 />
               );
             })}
