@@ -107,7 +107,7 @@ const speakers = ({}) => {
                     firstName={firstName}
                     lastName={lastName}
                     favorite={favorite}
-                    onHeartFavoriteHandler={onHeartFavoriteHandler}
+                    onHeartFavoriteHandler={heartFavoriteHandler}
                   />
                 );
               }
