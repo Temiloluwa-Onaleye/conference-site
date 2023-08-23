@@ -2,25 +2,48 @@ import { Header } from "@/components/Header";
 import { Menu } from "@/components/Menu";
 import speakerData from "@/components/SpeakerData";
 import SpeakerDetail from "@/components/SpeakerDetail";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState } from "react";
+import { ConfigContext } from "./_app";
 
 const speakers = () => {
   const [speakingSaturday, setSpeakingSaturday] = useState(true);
   const [speakingSunday, setSpeakingSunday] = useState(true);
 
-  const [speakerList, SetSpeakerList] = useState([]);
+  // const [speakerList, setSpeakerList] = useState([]);
+
+  function speakersReducer(state, action) {
+    switch (action.type) {
+      case "setSpeakerList": {
+        return action.data;
+      }
+      default:
+        return state;
+    }
+  }
+
+  const [speakerList, dispatch] = useReducer(speakersReducer, []);
+
   const [isLoading, setIsLoading] = useState(true);
+
+  const context = useContext(ConfigContext);
 
   useEffect(() => {
     setIsLoading(true);
     new Promise(function (resolve) {
-      setTimeout(() => {
+      setTimeout(function () {
         resolve();
       }, 1000);
     }).then(() => {
       setIsLoading(false);
+      const speakerListServerFilter = speakerData.filter(({ sat, sun }) => {
+        return (speakingSaturday && sat) || (speakingSunday && sun);
+      });
     });
-    SetSpeakerList(speakerData);
+    // setSpeakerList(speakerData);
+    dispatch({
+      type: "setSpeakerList",
+      data: speakerData,
+    });
     return () => {
       console.log("cleanup");
     };
@@ -71,30 +94,32 @@ const speakers = () => {
       <Menu />
       <div className="container">
         <div className="btn-toolbar margintopbottom5 chekbox-bigger">
-          <div className="hide">
-            <div className="form-check-inline">
-              <label className="form-check-label">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  onChange={handleChangeSaturday}
-                  checked={speakingSaturday}
-                />
-                Saturday Speakers
-              </label>
+          {context.showSpeakerSpeakingDays === false ? null : (
+            <div className="hide">
+              <div className="form-check-inline">
+                <label className="form-check-label">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    onChange={handleChangeSaturday}
+                    checked={speakingSaturday}
+                  />
+                  Saturday Speakers
+                </label>
+              </div>
+              <div className="form-check-inline">
+                <label className="form-check-label">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    onChange={handleChangeSunday}
+                    checked={speakingSunday}
+                  />
+                  Sunday Speakers
+                </label>
+              </div>
             </div>
-            <div className="form-check-inline">
-              <label className="form-check-label">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  onChange={handleChangeSunday}
-                  checked={speakingSunday}
-                />
-                Sunday Speakers
-              </label>
-            </div>
-          </div>
+          )}
         </div>
         <div className="row">
           <div className="card-deck">

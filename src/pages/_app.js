@@ -6,7 +6,7 @@ import React from "react";
 export const ConfigContext = React.createContext();
 
 const configValue = {
-  showSignUp: false,
+  showSignUp: true,
   showSpeakerSpeakingDays: true,
 };
 
