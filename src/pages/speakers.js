@@ -1,15 +1,27 @@
 import { Header } from "@/components/Header";
 import { Menu } from "@/components/Menu";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState } from "react";
 import speakerData from "@/components/SpeakerData";
 import SpeakerDetail from "@/components/SpeakerDetail";
+import { ConfigContext } from "./_app";
 
 const speakers = ({}) => {
-  const [speakerList, setSpeakerList] = useState([]);
+  const speakerReducer = (action, state) => {
+    switch (action.type) {
+      case "setSpeakerList": {
+        return action.data;
+      }
+      default:
+        return state;
+    }
+  };
+
+  const [speakerList, dispatch] = useReducer(speakerReducer, []);
   const [isLoading, setIsLoading] = useState(true);
   const [speakingSaturday, setSpeakingSaturday] = useState(true);
   const [speakingSunday, setSpeakingSunday] = useState(true);
 
+  const context = useContext(ConfigContext);
   useEffect(() => {
     setIsLoading(true);
     new Promise(function (resolve) {
@@ -19,7 +31,11 @@ const speakers = ({}) => {
     }).then(() => {
       setIsLoading(false);
     });
-    setSpeakerList(speakerData);
+    // setSpeakerList(speakerData);
+    dispatch({
+      type: "setSpeakerList",
+      data: speakerListFiltered,
+    });
     return () => {
       console.log("cleanup");
     };
@@ -70,30 +86,32 @@ const speakers = ({}) => {
       <Menu />
       <div className="container">
         <div className="btn-toolbar margintopbottom5 chekbox-bigger">
-          <div className="hide">
-            <div className="form-check-inline">
-              <label className="form-check-label">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  onChange={handleChangeSaturday}
-                  checked={speakingSaturday}
-                />
-                Saturday Speakers
-              </label>
+          {context.showSpeakerSpeakingDays === false ? null : (
+            <div className="hide">
+              <div className="form-check-inline">
+                <label className="form-check-label">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    onChange={handleChangeSaturday}
+                    checked={speakingSaturday}
+                  />
+                  Saturday Speakers
+                </label>
+              </div>
+              <div className="form-check-inline">
+                <label className="form-check-label">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    onChange={handleChangeSunday}
+                    checked={speakingSunday}
+                  />
+                  Sunday Speakers
+                </label>
+              </div>
             </div>
-            <div className="form-check-inline">
-              <label className="form-check-label">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  onChange={handleChangeSunday}
-                  checked={speakingSunday}
-                />
-                Sunday Speakers
-              </label>
-            </div>
-          </div>
+          )}
         </div>
         <div className="row">
           <div className="card-deck">
