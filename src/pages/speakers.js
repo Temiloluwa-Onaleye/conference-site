@@ -2,24 +2,21 @@ import { Header } from "@/components/Header";
 import { Menu } from "@/components/Menu";
 import speakerData from "@/components/SpeakerData";
 import SpeakerDetail from "@/components/SpeakerDetail";
-import React, { useContext, useEffect, useReducer, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { ConfigContext } from "./_app";
+import speakersReducer from "@/components/speakersReducer";
 
 const speakers = () => {
   const [speakingSaturday, setSpeakingSaturday] = useState(true);
   const [speakingSunday, setSpeakingSunday] = useState(true);
 
   // const [speakerList, setSpeakerList] = useState([]);
-
-  function speakersReducer(state, action) {
-    switch (action.type) {
-      case "setSpeakerList": {
-        return action.data;
-      }
-      default:
-        return state;
-    }
-  }
 
   const [speakerList, dispatch] = useReducer(speakersReducer, []);
 
@@ -49,18 +46,15 @@ const speakers = () => {
     };
   }, []);
 
-  const heartFavoriteHandler = (e, favoriteValue) => {
+  const heartFavoriteHandler = useCallback((e, favoriteValue) => {
     e.preventDefault();
     const sessionId = parseInt(e.target.attributes["data-sessionid"].value);
-    setSpeakerList(
-      speakerList.map((item) => {
-        if (item.id === sessionId) {
-          return { ...item, favorite: favoriteValue };
-        }
-        return item;
-      })
-    );
-  };
+
+    dispatch({
+      type: favoriteValue === true ? "favorite" : "unfavorite",
+      sessionId,
+    });
+  }, []);
 
   const handleChangeSaturday = () => {
     setSpeakingSaturday(!speakingSaturday);
