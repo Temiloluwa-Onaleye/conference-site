@@ -35,12 +35,13 @@ const speakers = () => {
       const speakerListServerFilter = speakerData.filter(({ sat, sun }) => {
         return (speakingSaturday && sat) || (speakingSunday && sun);
       });
+      // setSpeakerList(speakerData);
+      dispatch({
+        type: "setSpeakerList",
+        data: speakerListServerFilter,
+      });
     });
-    // setSpeakerList(speakerData);
-    dispatch({
-      type: "setSpeakerList",
-      data: speakerData,
-    });
+
     return () => {
       console.log("cleanup");
     };
@@ -48,7 +49,7 @@ const speakers = () => {
 
   const heartFavoriteHandler = useCallback((e, favoriteValue) => {
     e.preventDefault();
-    const sessionId = parseInt(e.target.attributes["data-sessionid"].value);
+    const sessionId = parseInt(e.target.attributes["data-sessionId"].value);
 
     dispatch({
       type: favoriteValue === true ? "favorite" : "unfavorite",
